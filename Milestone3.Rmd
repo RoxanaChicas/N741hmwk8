@@ -1,0 +1,297 @@
+---
+title: "Milestone3"
+author: "Roxana Chicas"
+date: "4/26/2017"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+---
+title: "Milestone3"
+author: "Roxana Chicas"
+date: "3/29/2017"
+output:
+  word_document: default
+  pdf_document: default
+  html_document:
+    keep_md: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+## Overview
+
+The Center for Disease Control (CDC, 2009) reports approximately 133 million Americans are living with a chronic disease.  It is projected that by 2020, 157 million Americans will have a least one chronic condition of which 81 million will have multiple conditions.  Longer life expectancy, with an aging population coupled with an increase of chronic conditions and comorbidity has resulted in at least 75% of health care cost.  DeVol and Bedroussian (2007) reported the total impact of  the seven most common chronic conditions (cancer, diabetes, hypertension, stroke, heart disease, pulmonary disease, and mental illness) on the economy is $1.3 trillion annually.  As a result of chronic conditions many have physical and psychological limitations that affects their activities of daily living and causes people to experience social isolation.  However, the use of Internet via computers and smartphones provides an outlet for patients living with chronic conditions to have access healthcare information.  The Internet also serves as a platform for healthcare providers to reach and disseminate healthcare information on diseases and self-care management.  According to the Pew Research Center (2015) nearly two thirds of Americans are smartphone owners and for many is their primary method of accessing the Internet.  This new method of communication could support those living with chronic condition in self-management and support healthy lifestyle and behavioral changes.  The use and access of the Internet by individuals suffering from chronic conditions has the potential to provide acceptable and cost-effective interventions by transferring treatment, rehabilitation and prevention of a condition to self-care in the community (Castelnuovo et al., 2010).
+
+The objective of this secondary data analysis is to evaluate the usage of the Internet of people living with chronic conditions, which technologies are used to access the Internet, and how frequently is healthcare information accessed.  This will be analyzed using the dataset, “Aug. 7 – Sept. 12 – Health,” from The Pew Research Center. This dataset can be accessed once accepting the terms of The Pew Research Center.
+[http://www.pewinternet.org/datasets/september-2012-health/](http://www.pewinternet.org/datasets/september-2012-health/)
+
+##Methods
+
+The dataset from "Aug. 7 – Sept. 12 – Health,” from The Pew Research Center was downloaded as a CSV file.  The dataset was then imported into Rstudio.   The variable that will be looked at are chronic disease, internet usage, device used to access the internet, and frequency of accessing healthcare information.  To clean up the data observations were checked for consistency in that they were all entered the same way and units are used correctly.  The data was readable to the statistical program in it raw CSV form.  Variables were all listed in the columns while observations are in rows as needed for this analysis.  
+
+A list of all the variables names were assessed along with a summary statistic. Categorical variables were recoded to reflect "yes or no" for easier viewing.  Race was recoded to display race name instead of a numerical value.  Family income and age were reorganized into groups. Chronic Conditions were seperated into 6 groups consisting of diabetes, hypertension, heart disease, pulmonary diseae, cancer, or other diseases and were identified as having the disease with a "1" and abscence of disease "2", unknown status was "8", refused to answer was "9".  Internet usage and handheld device use were coded as 1=yes, 2=no, 8=unknown, 9=refused and missing data as "na".  The recoded dataset was saved as Rdata file to save updated variable names and associated factor levels and labeling applied.
+
+A subset dataset named "Milestone3" was created with variables of interest.  The data was analyzed using simple descriptive statistics. . The following packages were used plyr, dplyr, ggplot2, and tidyverse to assist in data analysis.  All missing data were removed.  Package ggplot was used to graph internet usage among the 6 types of chronic conditions.
+
+##Results
+
+There were a total of 3014 adult participants of which 2565(85%) had a chronic condition.  There were 1337 males and 1677 females. The majority of the participants were white (70%).  All categories of chronic condition reported over 55% use of the internet.  Use of handheld devices to use the internet among the groups ranged from 25%-40%.  The mean family income was $27130. Figures 1-6 show internet useage is high amont those with and without chronic conditions.  
+
+##Conclusion
+
+The purpose of this analysis was to evaluate the use of the internet and handheld devices among individuals living with chronic conditions.  The results show internet usage is high among people with chronic conditions.  Additionally, handheld devices are used by many with chronic conditions.  This new method of communication could support those living with chronic condition in self-management and support healthy lifestyle and behavioral changes.  The use and access of the Internet by individuals suffering from chronic conditions has the potential to provide acceptable and cost-effective interventions by transferring treatment, rehabilitation and prevention of a condition to self-care in the community (Castelnuovo et al., 2010).  Handheld devices with internet access could improve patient center care, efficiency and effectiveness of the healthcare delivery.  The internet provides the ability of connecting patients and clinicians that can provide a wealth of oppertunities to improve care process.  It also lends for the oppertunity to collect large amounts of data of changes in patient conditions and track behaviors.  This could lead to a new way of tracking and identifying behvior patterns, preferences and cultural norms that could help the healthcare system reduce healthcare disparities and decrease morbidity and mortality rates.    
+
+
+```{r}
+library(plyr)
+library(dplyr)
+library(ggplot2)
+library(tidyverse)
+
+help("read.table")
+?read.table
+
+library(readr)
+Milestone2csv <- read_csv("~/Desktop/Milestone2csv.csv")
+View(Milestone2csv)                      
+
+```
+Third, we will look at all the variable names
+
+```{r}
+
+names(Milestone2csv)
+```
+```{r}
+summary(Milestone2csv)
+```
+```{r}
+rowSums(is.na(Milestone2csv)) # Number of missing per row
+colSums(is.na(Milestone2csv)) # Number of missing per column/variable
+
+```
+
+```{r}
+Milestone2csv$FIPS <- cut(Milestone2csv$FIPS, breaks=c(0, 30000, 49999, 74999,500000), labels =c("<$30,000/yr", "$30,000-$49,999", "50,000-$74,999", ">$75,000"))
+
+```
+```{r}
+Milestone2csv$q3a <- factor(Milestone2csv$q3a,
+                            levels = c(1,2),
+                            labels = c("DMy", "DMn"))
+
+Milestone2csv$q3b <- factor(Milestone2csv$q3b,
+                            levels = c(1,2),
+                            labels = c("HTNy", "HTNn"))
+Milestone2csv$q3c <- factor(Milestone2csv$q3c,
+                            levels = c(1,2),
+                            labels = c("RESPy", "RESPn"))
+
+Milestone2csv$q3d <- factor(Milestone2csv$q3d,
+                            levels = c(1,2),
+                            labels = c("HEARTy", "HEARTn"))
+
+Milestone2csv$q3e <- factor(Milestone2csv$q3e,
+                            levels = c(1,2),
+                            labels = c("CANCERy", "CANCERn"))
+
+Milestone2csv$q3f <- factor(Milestone2csv$q3f,
+                            levels = c(1,2),
+                            labels = c("OTHERy", "OTHERn"))
+
+Milestone2csv$sex <- factor(Milestone2csv$sex, 
+                            levels = c(1,2),
+                            labels = c("Male", "Female"))
+
+Milestone2csv$age <- cut(Milestone2csv$age, breaks=c(0, 29, 49, 64, 100), labels=c("18-29", "30-49", "50-64", "65+"))
+
+Milestone2csv$race <- factor(Milestone2csv$race,
+                             levels=c(1,2,3,4,5,6),
+                             labels=c("white","black","Asian","Mixed", "NativeAmerican","other")) 
+
+Milestone2csv$intuse <- factor(Milestone2csv$intuse,
+                               levels=c(1,2,3,4),
+                               labels=c("Yes", "No", "Don't know", "Refused")) 
+
+Milestone2csv$smph <- factor(Milestone2csv$smph,
+                          levels=c(1,2),
+                          labels=c("Yes","No"))
+
+Milestone2csv$cell1e <- factor(Milestone2csv$cell1e,
+                               levels=c(1,2), 
+                              labels=c("Yes","No"))
+
+Milestone2csv$q10 <- factor(Milestone2csv$q10,
+                            levels=c(1,2),
+                          labels=c("Yes","No"))
+
+Milestone2csv$q11 <- factor(Milestone2csv$q11,
+                            levels=c(1,2,3),
+                            labels=c("paid","looked_for_alternative","gave_up"))
+
+Milestone2csv$q21 <- factor(Milestone2csv$q21,
+                            levels=c(1,2),
+                            labels=c("Yes","No"))
+
+Milestone2csv$q22 <- factor(Milestone2csv$q22,
+                            levels=c(1,2),
+                            labels=c("Yes","No"))
+
+Milestone2csv$q24 <- factor(Milestone2csv$q24,
+                            levels=c(1,2),
+                            labels=c("Yes","No"))
+
+Milestone2csv$q25 <- factor(Milestone2csv$q25,
+                             levels=c(1,2),
+                             labels=c("Yes","No"))
+
+
+```
+
+```{r}
+# save the cmc dataset with the updated variable names
+# and associated factor levels and labeling applied.
+save(Milestone2csv, file="Milestone2csv.RData")
+```
+
+
+```{r}
+head(Milestone2csv)
+```
+```{r}
+knitr::kable(head(Milestone2csv))
+```
+
+
+```{r}
+table(Milestone2csv$sex)
+```
+```{r}
+table(Milestone2csv$race)
+
+```
+
+```{r}
+table(Milestone2csv$intuse)
+```
+
+```{r}
+table(Milestone2csv$FIPS)
+```
+```{r}
+table(Milestone2csv$age)
+
+```
+
+
+```{r}
+
+readq3a <-table(Milestone2csv$q3a, Milestone2csv$intuse)
+readq3a
+addmargins(readq3a)
+
+```
+```{r}
+readq3b <-table(Milestone2csv$q3b, Milestone2csv$intuse)
+readq3b
+addmargins(readq3b)
+```
+```{r}
+readq3c <-table(Milestone2csv$q3c, Milestone2csv$intuse)
+readq3c
+addmargins(readq3c)
+```
+```{r}
+readq3d <-table(Milestone2csv$q3d, Milestone2csv$intuse)
+readq3d
+addmargins(readq3d)
+```
+```{r}
+readq3e <-table(Milestone2csv$q3e, Milestone2csv$intuse)
+readq3e
+addmargins(readq3e)
+```
+```{r}
+readq3f <-table(Milestone2csv$q3f, Milestone2csv$intuse)
+readq3f
+addmargins(readq3f)
+```
+```{r}
+readq3f <-table(Milestone2csv$q3f, Milestone2csv$intmob)
+readq3f
+addmargins(readq3f)
+```
+
+```{r}
+Milestone3 <- Milestone2csv %>%
+    select(sex, race, age, FIPS, intuse, q3a, q3b, q3c, q3d, q3e, q3f, intmob)
+
+
+
+Milestone3 <- na.omit(Milestone3)
+summary(Milestone3)
+
+
+knitr::kable(head(Milestone3))
+
+```
+
+```{r}
+library(ggplot2)
+qplot(q3a, data=Milestone3, fill=intuse, alpha=I(.5),
+      main="Fig.1 Internet Use & Other Diabetes", xlab="Diabetes", ylab="freq")
+qplot(q3b, data=Milestone3, fill=intuse, alpha=I(.5),
+      main="Fig. 2 Internet Use & HTN", xlab="Diabetes", ylab="freq")
+qplot(q3c, data=Milestone3, fill=intuse, alpha=I(.5),
+      main="Fig. 3 Internet Use & Pulmonary", xlab="Diabetes", ylab="freq")
+qplot(q3d, data=Milestone3, fill=intuse, alpha=I(.5),
+      main="Fig. 4 Internet Use & Heart", xlab="Diabetes", ylab="freq")
+qplot(q3e, data=Milestone3, fill=intuse, alpha=I(.5),
+      main="Fig. 5 Internet Use & Cancer", xlab="Diabetes", ylab="freq")
+qplot(q3f, data=Milestone3, fill=intuse, alpha=I(.5),
+      main="Fig. 6 Internet Use & Other Other", xlab="Diabetes", ylab="freq")
+      
+```
+```{r}
+hyp.out <- glm(intuse~q3a+q3b+q3c+q3d+q3e+q3f+age+sex+intmob,
+               data=Milestone3, family="binomial")
+coef(summary(hyp.out))
+```
+
+
+```{r}
+readq3a <-table(Milestone2csv$q3a, Milestone2csv$intmob)
+addmargins(readq3a)
+
+readq3b <-table(Milestone2csv$q3b, Milestone2csv$intmob)
+addmargins(readq3b)
+
+readq3c <-table(Milestone2csv$q3c, Milestone2csv$intmob)
+addmargins(readq3c)
+
+readq3d <-table(Milestone2csv$q3d, Milestone2csv$intmob)
+addmargins(readq3d)
+
+readq3e <-table(Milestone2csv$q3e, Milestone2csv$intmob)
+addmargins(readq3e)
+
+readq3f <-table(Milestone2csv$q3f, Milestone2csv$intmob)
+addmargins(readq3f)
+```
+
+##References
+Bedroussian, A., & DeVol, R. (2007) An Unhealthy America: The Economic Burden of Chronic Disease Charting a New Course to Save Lives and Increase Productivity and Economic Growth. Milken Institute. October 2007.
+
+Center for Disease Control. (2009) Chronic Disease Prevention and Promotion. Retrieved on April., 15, 2017
+
+Pew Research Center, April, 2015, “The Smartphone Difference” Available at: http://www.pewinternet.org/2015/04/01/us-smartphone-use-in-2015/
+
+
+
+This markdown file used to create this document can be found in the repository at 
+<>
